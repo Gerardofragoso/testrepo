@@ -1,0 +1,38 @@
+fetch logs
+| filter contains(loglevel, "ERROR")
+
+fetch dt.system.events
+| filter app.id == "dynatrace.appshell"
+| summarize count = count(), by:{app.id}
+
+fetch logs
+| filter contains(loglevel, "ERROR") 
+| sort timestamp, direction:"descending"
+
+
+fetch logs
+| filter dt.entity.process_group=="PROCESS_GROUP-E3A554FD1BC38888"
+| parse content, "LD 'java.net.SocketException: ' INT:Socket"
+
+fetch logs
+| filter dt.entity.process_group=="PROCESS_GROUP-123F4A56BCDA0EA9"
+| parse content, "LD 'HTTP_STATUS ' INT:httpstatus"
+
+| parse     content, "LD IPADDR:ip ':' LONG:payload SPACE LD 'HTTP_STATUS' SPACE INT:http_status  LD (EOL| EOS)"
+
+
+fetch logs
+| filter dt.entity.process_group=="PROCESS_GROUP-E3A554FD1BC38888" and  loglevel=="ERROR" and contains(content, "ava.net.SocketException:")
+| parse content, "LD 'java.net.SocketException: ' STRING:Socket"
+| sort Socket
+
+
+fetch logs
+| filter dt.entity.process_group=="PROCESS_GROUP-802F3A32CECA0EA9"
+| parse content, "LD 'HTTP_STATUS ' INT:httpstatus"
+| filter httpstatus >= 400
+
+fetch logs
+| filter dt.entity.process_group=="PROCESS_GROUP-802F3A32CECA0EA9"
+| parse content, "LD 'HTTP_STATUS ' INT:httpstatus"
+| filter httpstatus >= 400
